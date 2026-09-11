@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.khegiw.t2-kbdlight</string>
+    <string>local.t2-kbdlight</string>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/t2-kbdlight</string>

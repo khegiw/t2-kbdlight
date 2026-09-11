@@ -54,22 +54,22 @@ sudo t2-kbdlight
 Install the included LaunchDaemon after installing the command:
 
 ```sh
-sudo install -m 644 com.khegiw.t2-kbdlight.plist /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
-sudo launchctl bootstrap system /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+sudo install -m 644 local.t2-kbdlight.plist /Library/LaunchDaemons/local.t2-kbdlight.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/local.t2-kbdlight.plist
 ```
 
 The daemon applies the brightness at startup and every 30 seconds, bringing the glow back shortly after wake. Check whether your tiny lighting technician is working:
 
 ```sh
-sudo launchctl print system/com.khegiw.t2-kbdlight
+sudo launchctl print system/local.t2-kbdlight
 sudo tail -n 20 /var/log/t2-kbdlight.log
 ```
 
 Had enough ambience? Remove the daemon with:
 
 ```sh
-sudo launchctl bootout system /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
-sudo rm /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+sudo launchctl bootout system /Library/LaunchDaemons/local.t2-kbdlight.plist
+sudo rm /Library/LaunchDaemons/local.t2-kbdlight.plist
 ```
 
 ## The sensible warning section
