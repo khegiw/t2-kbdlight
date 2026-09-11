@@ -31,7 +31,7 @@ int main(void) {
         return 2;
     }
 
-    uint8_t brightness[] = {0x01, 60, 60, 0, 0, 0x5e, 1, 0, 0};
+    uint8_t brightness[] = {0x01, 30, 30, 0, 0, 0x5e, 1, 0, 0};
     IOReturn setBrightness = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x01, brightness, sizeof(brightness));
     uint8_t power[] = {0x03, 1, 0x5e, 1, 0, 0};
     IOReturn setPower = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, power, sizeof(power));

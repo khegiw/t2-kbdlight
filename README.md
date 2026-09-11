@@ -1,6 +1,6 @@
 # T2 keyboard backlight bypass
 
-This utility turns the keyboard backlight on at maximum brightness on a 2019 16-inch Intel MacBook Pro (`MacBookPro16,1`). It sends feature reports directly to the T2 `Touch Bar Backlight` HID interface, bypassing macOS ambient-light-sensor control.
+This utility turns the keyboard backlight on at half brightness on a 2019 16-inch Intel MacBook Pro (`MacBookPro16,1`). It sends feature reports directly to the T2 `Touch Bar Backlight` HID interface, bypassing macOS ambient-light-sensor control.
 
 This was created for a Mac whose built-in display assembly and ambient-light sensor are unavailable. It is not a repair for the broken display hardware.
 
@@ -48,7 +48,7 @@ sudo t2-kbdlight
 
 ## Important limitations
 
-- The utility is intentionally hard-coded for the verified T2 HID device and maximum brightness.
+- The utility is intentionally hard-coded for the verified T2 HID device and half brightness.
 - It briefly requests exclusive access to the HID interface and immediately releases it.
 - It uses an undocumented hardware protocol and may stop working after a macOS or firmware update.
 - Do not use it on another Mac model without confirming that model's HID protocol.
@@ -56,6 +56,6 @@ sudo t2-kbdlight
 
 ## Protocol
 
-The utility selects USB vendor `0x05ac`, product `0x8102`, vendor usage page `0xff00`, usage `15`. Feature report `0x01` sets brightness to the model's maximum value of `60`; feature report `0x03` powers the keyboard LEDs on.
+The utility selects USB vendor `0x05ac`, product `0x8102`, vendor usage page `0xff00`, usage `15`. Feature report `0x01` sets brightness to `30` out of the model's maximum value of `60`; feature report `0x03` powers the keyboard LEDs on.
 
 The protocol was cross-checked against the T2 Linux [`apple-ib-drv`](https://github.com/t2linux/apple-ib-drv/pull/4) implementation for `MacBookPro16,1`.
