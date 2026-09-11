@@ -1,6 +1,6 @@
 # Let there be keys ✨
 
-What happens when a 2019 MacBook Pro loses its built-in display—and the ambient-light sensor goes with it? macOS decides the keyboard no longer needs light either. Very thoughtful.
+What happens when a 2019 MacBook Pro loses its built-in display—or graduates to `headless mode`—and the ambient-light sensor goes with it? macOS decides the keyboard no longer needs light either. Very thoughtful.
 
 `t2-kbdlight` politely disagrees. It turns the keyboard backlight on at a comfortable half brightness by talking directly to the T2 `Touch Bar Backlight` HID interface.
 
