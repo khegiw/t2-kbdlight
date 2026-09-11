@@ -4,7 +4,7 @@ What happens when a 2019 MacBook Pro loses its built-in display—and the ambien
 
 `t2-kbdlight` politely disagrees. It turns the keyboard backlight on at a comfortable half brightness by talking directly to the T2 `Touch Bar Backlight` HID interface.
 
-![A headless MacBook Pro with its keyboard backlight glowing](assets/macbook-keyboard.jpg)
+![A headless MacBook Pro with its keyboard backlight glowing](assets/macbook-keyboard-cropped.jpg)
 
 This little rescue tool was built and tested for `MacBookPro16,1`. It bypasses the missing sensor, but it does not repair the broken display hardware. Tiny utility, very specific mission.
 
