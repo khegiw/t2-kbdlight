@@ -1,12 +1,13 @@
-# Let there be keys ✨
+# T2 Keyboard Backlight Bypass ✨
 
-What happens when a 2019 MacBook Pro loses its built-in display—or graduates to `headless mode`—and the ambient-light sensor goes with it? macOS decides the keyboard no longer needs light either. Very thoughtful.
+A small utility that tells the keyboard backlight on a 2019 16-inch Intel MacBook Pro (MacBookPro16,1) to stop waiting for an ambient-light sensor that is no longer present.
 
-`t2-kbdlight` politely disagrees. It turns the keyboard backlight on at a comfortable half brightness by talking directly to the T2 `Touch Bar Backlight` HID interface.
+It sends feature reports directly to the T2 Touch Bar Backlight HID interface. That bypasses macOS ambient-light-sensor control and sets the keyboard backlight to maximum brightness.
+
+This was built for a Mac whose display assembly and ambient-light sensor are unavailable. It does not repair damaged display hardware. It only drives the keyboard backlight. Hardware does not care about optimism; it responds to the right bytes.
 
 ![A headless MacBook Pro with its keyboard backlight glowing](assets/macbook-keyboard-cropped.jpg)
 
-This little rescue tool was built and tested for `MacBookPro16,1`. It bypasses the missing sensor, but it does not repair the broken display hardware. Tiny utility, very specific mission.
 
 ## Requirements
 
@@ -14,13 +15,16 @@ This little rescue tool was built and tested for `MacBookPro16,1`. It bypasses t
 - Xcode Command Line Tools
 - Administrator access
 
-First, make sure you have the right Mac:
+First, verify the Mac model:
 
 ```sh
 system_profiler SPHardwareDataType | grep 'Model Identifier'
 ```
 
-The magic words are `MacBookPro16,1`. If your Mac says something else, stop here—this hardware protocol is not a place for optimistic guessing.
+Expected result:
+Model Identifier: MacBookPro16,1
+
+If the identifier differs, stop. Do not infer protocol compatibility from a similar product name. Apple shipped multiple machines that look alike and behave differently at the hardware interface.
 
 ## Build
 
