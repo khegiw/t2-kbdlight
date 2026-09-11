@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <IOKit/hid/IOHIDManager.h>
+#import <unistd.h>
 
 int main(void) {
     IOHIDManagerRef manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
@@ -31,14 +32,17 @@ int main(void) {
         return 2;
     }
 
-    uint8_t brightness[] = {0x01, 30, 30, 0, 0, 0x5e, 1, 0, 0};
+    uint8_t powerOff[] = {0x03, 0, 0x5e, 1, 0, 0};
+    IOReturn setPowerOff = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, powerOff, sizeof(powerOff));
+    usleep(250000);
+    uint8_t brightness[] = {0x01, 30, 30, 1, 1, 0x5e, 1, 0, 0};
     IOReturn setBrightness = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x01, brightness, sizeof(brightness));
     uint8_t power[] = {0x03, 1, 0x5e, 1, 0, 0};
     IOReturn setPower = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, power, sizeof(power));
 
-    printf("brightness report: 0x%x\npower report: 0x%x\n", setBrightness, setPower);
+    printf("power-off report: 0x%x\nbrightness report: 0x%x\npower report: 0x%x\n", setPowerOff, setBrightness, setPower);
     IOHIDDeviceClose(target, kIOHIDOptionsTypeSeizeDevice);
     CFRelease(devices);
     CFRelease(manager);
-    return setBrightness == kIOReturnSuccess && setPower == kIOReturnSuccess ? 0 : 3;
+    return setPowerOff == kIOReturnSuccess && setBrightness == kIOReturnSuccess && setPower == kIOReturnSuccess ? 0 : 3;
 }

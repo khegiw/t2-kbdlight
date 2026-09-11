@@ -33,6 +33,7 @@ sudo ./t2-kbdlight
 Success looks like this:
 
 ```text
+power-off report: 0x0
 brightness report: 0x0
 power report: 0x0
 ```
@@ -70,6 +71,7 @@ sudo rm /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
 ## Important limitations
 
 - The utility is intentionally hard-coded for the verified T2 HID device and half brightness.
+- It power-cycles the LEDs and enables the T2 override required when the ambient sensor is unavailable.
 - It briefly requests exclusive access to the HID interface and immediately releases it.
 - It uses an undocumented hardware protocol and may stop working after a macOS or firmware update.
 - The optional LaunchDaemon re-applies the setting every 30 seconds.
@@ -78,6 +80,6 @@ sudo rm /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
 
 ## Protocol
 
-The utility selects USB vendor `0x05ac`, product `0x8102`, vendor usage page `0xff00`, usage `15`. Feature report `0x01` sets brightness to `30` out of the model's maximum value of `60`; feature report `0x03` powers the keyboard LEDs on.
+The utility selects USB vendor `0x05ac`, product `0x8102`, vendor usage page `0xff00`, usage `15`. Feature report `0x03` first powers the LEDs off. After 250 milliseconds, feature report `0x01` sets brightness to `30` out of `60` with the hardware override enabled, then report `0x03` powers the LEDs on.
 
 The protocol was cross-checked against the T2 Linux [`apple-ib-drv`](https://github.com/t2linux/apple-ib-drv/pull/4) implementation for `MacBookPro16,1`.
