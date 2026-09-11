@@ -37,8 +37,6 @@ brightness report: 0x0
 power report: 0x0
 ```
 
-Run the command again if macOS turns the light off after sleep or restart.
-
 ## Install the command
 
 ```sh
@@ -46,11 +44,35 @@ sudo install -m 755 t2-kbdlight /usr/local/bin/t2-kbdlight
 sudo t2-kbdlight
 ```
 
+## Restore the light after sleep
+
+Install the included LaunchDaemon after installing the command:
+
+```sh
+sudo install -m 644 com.khegiw.t2-kbdlight.plist /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+```
+
+The daemon applies the brightness at startup and every 30 seconds, restoring it shortly after wake. Check its status and latest output with:
+
+```sh
+sudo launchctl print system/com.khegiw.t2-kbdlight
+sudo tail -n 20 /var/log/t2-kbdlight.log
+```
+
+To remove the daemon:
+
+```sh
+sudo launchctl bootout system /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+sudo rm /Library/LaunchDaemons/com.khegiw.t2-kbdlight.plist
+```
+
 ## Important limitations
 
 - The utility is intentionally hard-coded for the verified T2 HID device and half brightness.
 - It briefly requests exclusive access to the HID interface and immediately releases it.
 - It uses an undocumented hardware protocol and may stop working after a macOS or firmware update.
+- The optional LaunchDaemon re-applies the setting every 30 seconds.
 - Do not use it on another Mac model without confirming that model's HID protocol.
 - Successful report delivery does not prove that physically damaged keyboard LEDs or cables can illuminate.
 
