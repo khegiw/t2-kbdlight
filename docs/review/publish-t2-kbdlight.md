@@ -1,0 +1,6 @@
+# Review
+
+- Compiled with Apple Clang on macOS 15.7.7.
+- Executed against a MacBookPro16,1 T2 HID interface with administrator access.
+- Brightness and power reports both returned `0x0` (`kIOReturnSuccess`).
+- The utility has no persistent installation or background behavior.
