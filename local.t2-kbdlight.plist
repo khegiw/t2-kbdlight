@@ -7,11 +7,10 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/t2-kbdlight</string>
+        <string>--watch</string>
     </array>
-    <key>RunAtLoad</key>
+    <key>KeepAlive</key>
     <true/>
-    <key>StartInterval</key>
-    <integer>30</integer>
     <key>StandardOutPath</key>
     <string>/var/log/t2-kbdlight.log</string>
     <key>StandardErrorPath</key>
