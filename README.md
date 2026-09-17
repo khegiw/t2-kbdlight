@@ -68,7 +68,7 @@ sudo install -m 644 local.t2-kbdlight.plist /Library/LaunchDaemons/local.t2-kbdl
 sudo launchctl bootstrap system /Library/LaunchDaemons/local.t2-kbdlight.plist
 ```
 
-The daemon listens for wake notifications, waits 250 milliseconds for the T2 bridge, and retries for roughly five seconds. A five-minute fallback handles unexpected resets.
+The daemon turns the keyboard light off before sleep. After wake, it waits 250 milliseconds for the T2 bridge and retries for roughly five seconds. A five-minute fallback handles unexpected resets.
 
 Check your tiny lighting technician:
 

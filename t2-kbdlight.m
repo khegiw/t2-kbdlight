@@ -8,13 +8,14 @@
 static io_connect_t powerRootPort;
 static dispatch_queue_t restoreQueue;
 static bool restorePending;
+static bool systemSleeping;
 
 static void logResult(NSString *message) {
     fprintf(stdout, "%s %s\n", NSDate.date.description.UTF8String, message.UTF8String);
     fflush(stdout);
 }
 
-static int applyBacklight(void) {
+static int applyBacklight(bool turnOn) {
     IOHIDManagerRef manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     NSDictionary *matching = @{
         @kIOHIDVendorIDKey: @0x05ac,
@@ -62,11 +63,15 @@ static int applyBacklight(void) {
 
     uint8_t powerOff[] = {0x03, 0, 0x5e, 1, 0, 0};
     IOReturn setPowerOff = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, powerOff, sizeof(powerOff));
-    usleep(250000);
-    uint8_t brightness[] = {0x01, 30, 30, 1, 1, 0x5e, 1, 0, 0};
-    IOReturn setBrightness = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x01, brightness, sizeof(brightness));
-    uint8_t power[] = {0x03, 1, 0x5e, 1, 0, 0};
-    IOReturn setPower = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, power, sizeof(power));
+    IOReturn setBrightness = kIOReturnSuccess;
+    IOReturn setPower = kIOReturnSuccess;
+    if (turnOn) {
+        usleep(250000);
+        uint8_t brightness[] = {0x01, 30, 30, 1, 1, 0x5e, 1, 0, 0};
+        setBrightness = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x01, brightness, sizeof(brightness));
+        uint8_t power[] = {0x03, 1, 0x5e, 1, 0, 0};
+        setPower = IOHIDDeviceSetReport(target, kIOHIDReportTypeFeature, 0x03, power, sizeof(power));
+    }
 
     IOHIDDeviceClose(target, kIOHIDOptionsTypeNone);
     CFRelease(devices);
@@ -78,7 +83,7 @@ static int applyBacklight(void) {
 static int applyWithRetries(int attempts) {
     int result = 1;
     for (int attempt = 1; attempt <= attempts; attempt++) {
-        result = applyBacklight();
+        result = applyBacklight(true);
         if (result == 0) {
             logResult([NSString stringWithFormat:@"backlight restored on attempt %d", attempt]);
             return 0;
@@ -91,9 +96,14 @@ static int applyWithRetries(int attempts) {
 
 static void scheduleRestore(uint64_t delayMilliseconds) {
     dispatch_async(restoreQueue, ^{
+        if (systemSleeping) return;
         if (restorePending) return;
         restorePending = true;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayMilliseconds * NSEC_PER_MSEC), restoreQueue, ^{
+            if (systemSleeping) {
+                restorePending = false;
+                return;
+            }
             @autoreleasepool {
                 applyWithRetries(10);
             }
@@ -105,10 +115,20 @@ static void scheduleRestore(uint64_t delayMilliseconds) {
 static void powerCallback(void *refcon, io_service_t service, natural_t messageType, void *messageArgument) {
     (void)refcon;
     (void)service;
-    if (messageType == kIOMessageCanSystemSleep || messageType == kIOMessageSystemWillSleep) {
+    if (messageType == kIOMessageCanSystemSleep) {
+        IOAllowPowerChange(powerRootPort, (long)messageArgument);
+    } else if (messageType == kIOMessageSystemWillSleep) {
+        dispatch_sync(restoreQueue, ^{
+            systemSleeping = true;
+            int result = applyBacklight(false);
+            logResult(result == 0 ? @"backlight disabled for sleep" : [NSString stringWithFormat:@"backlight sleep disable failed with code %d", result]);
+        });
         IOAllowPowerChange(powerRootPort, (long)messageArgument);
     } else if (messageType == kIOMessageSystemHasPoweredOn) {
         logResult(@"wake detected");
+        dispatch_sync(restoreQueue, ^{
+            systemSleeping = false;
+        });
         scheduleRestore(250);
     }
 }
